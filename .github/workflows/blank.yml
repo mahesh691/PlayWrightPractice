@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - master
+
   pull_request:
     branches:
       - main
       - master
+
   workflow_dispatch:
 
 jobs:
@@ -16,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -32,12 +34,20 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
-        run: npx playwright test src/tests/example.spec.ts
+        run: npx playwright test
 
-      - name: Upload Playwright report
+      - name: Upload Playwright execution report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-execution-report
           path: playwright-report/
+          retention-days: 30
+
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-artifacts
+          path: test-results/
           retention-days: 30
